@@ -1,78 +1,80 @@
 <resources>
-    <string name="app_name">GitPulse</string>
+    <string name="app_name">Twin</string>
 
-    <!-- Bottom Navigation -->
-    <string name="nav_feed">Bảng tin</string>
-    <string name="nav_explore">Khám phá</string>
+    <!-- Auth -->
+    <string name="auth_tagline">Kết nối bạn bè, chia sẻ khoảnh khắc &amp; đồng bộ trực tiếp với web Twin</string>
+    <string name="auth_tab_login">Đăng nhập</string>
+    <string name="auth_tab_register">Đăng ký</string>
+    <string name="auth_name_label">Tên hiển thị</string>
+    <string name="auth_email_label">Email tài khoản</string>
+    <string name="auth_password_label">Mật khẩu</string>
+    <string name="auth_login_submit">Đăng nhập</string>
+    <string name="auth_register_submit">Tạo tài khoản Twin</string>
+    <string name="auth_forgot_password">Quên mật khẩu?</string>
+    <string name="auth_google_button">Đăng nhập bằng Google</string>
+    <string name="auth_guest_button">Tiếp tục với chế độ khách</string>
+    <string name="auth_firebase_note">Tài khoản Email/Mật khẩu và Google đều đồng bộ thời gian thực qua Firebase.</string>
+    <string name="guest_banner_label">Chế độ khách • Trải nghiệm cục bộ</string>
+    <string name="guest_sign_in_cta">Đăng nhập</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Bảng tin</string>
+    <string name="nav_community">Cộng đồng</string>
+    <string name="nav_messages">Twin Chat</string>
     <string name="nav_saved">Đã lưu</string>
-    <string name="nav_profile">Hồ sơ</string>
+    <string name="nav_profile">Cá nhân</string>
 
-    <!-- Feed -->
-    <string name="feed_subtitle">Mạng xã hội từ GitHub API</string>
-    <string name="feed_stories_title">Cộng đồng nổi bật</string>
-    <string name="feed_tab_trending">Xu hướng</string>
-    <string name="feed_tab_live">Hoạt động mới</string>
-    <string name="feed_tab_following">Đang theo dõi</string>
-    <string name="feed_refresh">Làm mới</string>
-    <string name="feed_empty_following">Chưa có hoạt động từ các lập trình viên bạn đang theo dõi.</string>
-    <string name="feed_empty_generic">Không có dữ liệu hiển thị. Kéo hoặc nhấn làm mới để thử lại.</string>
+    <!-- Feed & Composer -->
+    <string name="composer_prompt">Bạn đang nghĩ gì thế?</string>
+    <string name="composer_title">Tạo bài viết mới</string>
+    <string name="composer_publish">Đăng bài</string>
+    <string name="composer_photo_pick">Chọn ảnh</string>
+    <string name="stories_create">Tạo tin</string>
+    <string name="story_create_title">Tạo Tin 24h mới</string>
+    <string name="story_publish">Đăng tin</string>
 
-    <!-- Explore -->
-    <string name="explore_title">Khám phá GitHub</string>
-    <string name="explore_search_hint">Tìm kho mã nguồn, chủ đề hoặc lập trình viên...</string>
-    <string name="explore_mode_repos">Kho mã nguồn</string>
-    <string name="explore_mode_users">Lập trình viên</string>
-    <string name="explore_topics_label">Chủ đề mạng xã hội &amp; mã nguồn mở</string>
-    <string name="explore_no_results">Không tìm thấy kết quả phù hợp trên GitHub.</string>
+    <!-- Post Actions -->
+    <string name="post_react">Cảm xúc</string>
+    <string name="post_comment">Bình luận</string>
+    <string name="post_share">Chia sẻ</string>
+    <string name="post_save">Lưu</string>
+    <string name="post_saved">Đã lưu</string>
+    <string name="post_delete">Xóa bài</string>
 
-    <!-- Saved -->
-    <string name="saved_title">Kho mã nguồn đã lưu</string>
-    <string name="saved_subtitle">Danh sách dự án bạn đã đánh dấu để đọc lại nhanh</string>
-    <string name="saved_empty_title">Chưa có dự án nào được lưu</string>
-    <string name="saved_empty_desc">Nhấn biểu tượng lưu trên bất kỳ bài đăng hoặc kho mã nguồn nào để thêm vào bộ sưu tập của bạn.</string>
+    <!-- Community -->
+    <string name="community_friends">Bạn bè</string>
+    <string name="community_groups">Nhóm</string>
+    <string name="community_pages">Trang</string>
+    <string name="friend_accept">Chấp nhận</string>
+    <string name="friend_decline">Từ chối</string>
+    <string name="friend_add">Kết bạn</string>
+    <string name="friend_sent">Đã gửi</string>
+    <string name="friend_unfriend">Hủy kết bạn</string>
+    <string name="group_create">Tạo nhóm</string>
+    <string name="group_join">Tham gia</string>
+    <string name="group_leave">Rời nhóm</string>
+    <string name="page_create">Tạo trang</string>
+    <string name="page_follow">Theo dõi</string>
+    <string name="page_following">Đang theo dõi</string>
 
-    <!-- Profile & Settings -->
-    <string name="profile_title">Hồ sơ &amp; Kết nối GitHub</string>
-    <string name="profile_connect_title">Kết nối tài khoản GitHub của bạn</string>
-    <string name="profile_username_hint">Nhập tên người dùng GitHub (vd: torvalds)</string>
-    <string name="profile_token_hint">GitHub Personal Access Token (tùy chọn)</string>
-    <string name="profile_token_helper">Token giúp nâng giới hạn GitHub API từ 60 lên 5.000 lượt/giờ và lưu an toàn trên thiết bị.</string>
-    <string name="profile_apply_button">Cập nhật nguồn</string>
-    <string name="profile_theme_title">Giao diện tối (Obsidian)</string>
-    <string name="profile_following_section">Đang theo dõi (%1$d)</string>
-    <string name="profile_rate_limit">Giới hạn GitHub API còn lại: %1$d / %2$d</string>
+    <!-- Chat -->
+    <string name="chat_title">Twin Chat</string>
+    <string name="chat_input_hint">Nhập tin nhắn...</string>
+    <string name="chat_send">Gửi</string>
 
-    <!-- Repo Detail -->
-    <string name="repo_tab_readme">README</string>
-    <string name="repo_tab_releases">Releases</string>
-    <string name="repo_tab_issues">Thảo luận</string>
-    <string name="repo_tab_files">Tệp &amp; JSON</string>
-    <string name="repo_open_github">Mở trên GitHub</string>
-    <string name="repo_share">Chia sẻ</string>
-    <string name="repo_bookmark">Lưu dự án</string>
-    <string name="repo_bookmarked">Đã lưu</string>
-    <string name="repo_no_readme">Kho mã nguồn này chưa có tệp README.md.</string>
-    <string name="repo_no_releases">Chưa có bản phát hành (Release) nào được công bố.</string>
-    <string name="repo_no_issues">Chưa có bài thảo luận hoặc Issue công khai nào.</string>
-    <string name="repo_no_files">Thư mục trống.</string>
-    <string name="repo_download_asset">Tải xuống</string>
-    <string name="repo_view_comments">Xem %1$d bình luận</string>
-    <string name="repo_hide_comments">Ẩn bình luận</string>
-    <string name="repo_no_comments">Chưa có bình luận nào trong thảo luận này.</string>
+    <!-- Notifications -->
+    <string name="notifications_title">Thông báo</string>
+    <string name="notifications_empty">Chưa có thông báo mới nào.</string>
 
-    <!-- User Profile -->
-    <string name="user_follow">Theo dõi</string>
-    <string name="user_following">Đang theo dõi</string>
-    <string name="user_repos_tab">Kho mã nguồn</string>
-    <string name="user_activity_tab">Bài đăng &amp; Hoạt động</string>
-    <string name="user_followers_label">Người theo dõi</string>
-    <string name="user_following_label">Đang theo dõi</string>
-    <string name="user_repos_label">Dự án</string>
+    <!-- Profile -->
+    <string name="profile_edit">Chỉnh sửa hồ sơ</string>
+    <string name="profile_sign_out">Đăng xuất</string>
+    <string name="profile_dark_mode">Chế độ tối (Dark Mode)</string>
+    <string name="profile_save_changes">Lưu thay đổi</string>
 
-    <!-- Actions & States -->
-    <string name="action_retry">Thử lại</string>
+    <!-- Generic -->
     <string name="action_back">Quay lại</string>
     <string name="action_close">Đóng</string>
-    <string name="error_rate_limit">Đã đạt giới hạn truy cập GitHub API (60 lượt/giờ). Hãy thêm GitHub Token ở mục Hồ sơ để tiếp tục không giới hạn.</string>
-    <string name="error_network">Không thể kết nối tới GitHub API. Kiểm tra mạng và thử lại.</string>
+    <string name="action_retry">Thử lại</string>
+    <string name="action_cancel">Hủy</string>
 </resources>

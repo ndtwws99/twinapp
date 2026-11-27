@@ -1,6 +1,6 @@
 {
-  "name": "GitPulse",
-  "description": "Mạng xã hội lập trình viên kết nối trực tiếp GitHub API — theo dõi bảng tin hoạt động, khám phá kho mã nguồn, đọc Markdown README, Releases, thảo luận Issues và duyệt tệp JSON.",
+  "name": "Twin",
+  "description": "Mạng xã hội Twin đồng bộ giao diện và dữ liệu thời gian thực từ Firebase của ndtwws99.github.io (Bảng tin, Tin 24h, Bạn bè, Nhóm, Trang, Tin nhắn Twin Chat và Hồ sơ cá nhân).",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

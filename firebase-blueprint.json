@@ -1,0 +1,182 @@
+{
+  "entities": {
+    "TwinUser": {
+      "title": "TwinUser",
+      "description": "Public social profile of a Twin member synced across web and Android (PII isolated under /users/{userId}/private).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Authenticated Firebase UID" },
+        "name": { "type": "string", "description": "Display name" },
+        "role": { "type": "string", "enum": ["member", "admin"], "description": "Role (immutable by self)" },
+        "avatar": { "type": "string", "description": "Profile avatar URL" },
+        "cover": { "type": "string", "description": "Profile cover URL" },
+        "bio": { "type": "string", "description": "Short biography" },
+        "location": { "type": "string", "description": "Current city/location" },
+        "work": { "type": "string", "description": "Workplace or role" },
+        "website": { "type": "string", "description": "Personal website URL" },
+        "discoverable": { "type": "boolean", "description": "Allows authenticated members to discover profile" },
+        "online": { "type": "boolean", "description": "Online presence flag" },
+        "friends": { "type": "array", "description": "Bounded list of friend UIDs" },
+        "friendRequests": { "type": "array", "description": "Bounded list of incoming friend request UIDs" },
+        "savedPosts": { "type": "array", "description": "Bounded list of saved post IDs" },
+        "lastActiveAt": { "type": "integer", "description": "Epoch millis of last activity" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp of creation" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp of last update" }
+      },
+      "required": ["uid", "name", "role", "discoverable", "friends", "friendRequests", "savedPosts", "createdAt"]
+    },
+    "TwinUserPrivate": {
+      "title": "TwinUserPrivate",
+      "description": "Owner-only PII document under /users/{userId}/private/{docId}.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Owner UID" },
+        "email": { "type": "string", "description": "Private email address" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp of update" }
+      },
+      "required": ["uid", "updatedAt"]
+    },
+    "TwinPost": {
+      "title": "TwinPost",
+      "description": "Social feed post matching Twin web schema (text, media, feeling, reactions, comments, savedBy, sharesCount).",
+      "type": "object",
+      "properties": {
+        "authorUid": { "type": "string", "description": "Author Firebase UID" },
+        "authorName": { "type": "string", "description": "Author display name" },
+        "authorAvatar": { "type": "string", "description": "Author avatar URL" },
+        "content": { "type": "string", "description": "Post text content" },
+        "feeling": { "type": "string", "description": "Optional mood/feeling label" },
+        "privacy": { "type": "string", "enum": ["public", "friends"], "description": "Visibility mode" },
+        "allowedFriendUids": { "type": "array", "description": "Friend UIDs allowed when privacy is friends" },
+        "imageUrl": { "type": "string", "description": "Optional image URL" },
+        "groupId": { "type": "string", "description": "Optional group ID" },
+        "groupName": { "type": "string", "description": "Optional group name" },
+        "pageId": { "type": "string", "description": "Optional page ID" },
+        "pageName": { "type": "string", "description": "Optional page name" },
+        "pinned": { "type": "boolean", "description": "Whether pinned by author" },
+        "reactions": { "type": "object", "description": "Map of uid to reaction key (like/love/haha/wow/sad/angry)" },
+        "comments": { "type": "array", "description": "Bounded list of comment maps" },
+        "savedBy": { "type": "array", "description": "Bounded list of UIDs who saved the post" },
+        "sharesCount": { "type": "integer", "description": "Share counter" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp of creation" }
+      },
+      "required": ["authorUid", "authorName", "content", "privacy", "allowedFriendUids", "pinned", "reactions", "comments", "savedBy", "sharesCount", "createdAt"]
+    },
+    "TwinStory": {
+      "title": "TwinStory",
+      "description": "24h Twin Story (text gradient or image).",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["text", "image"], "description": "Story format" },
+        "authorUid": { "type": "string", "description": "Author UID" },
+        "authorName": { "type": "string", "description": "Author name" },
+        "authorAvatar": { "type": "string", "description": "Author avatar URL" },
+        "text": { "type": "string", "description": "Story text" },
+        "bgId": { "type": "string", "description": "Background gradient preset ID" },
+        "imageUrl": { "type": "string", "description": "Optional story image URL" },
+        "caption": { "type": "string", "description": "Optional caption" },
+        "privacy": { "type": "string", "enum": ["public", "friends"], "description": "Visibility" },
+        "likes": { "type": "array", "description": "UIDs who liked story" },
+        "sharesCount": { "type": "integer", "description": "Share count" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp of creation" }
+      },
+      "required": ["type", "authorUid", "authorName", "privacy", "likes", "sharesCount", "createdAt"]
+    },
+    "TwinGroup": {
+      "title": "TwinGroup",
+      "description": "Community group in Twin.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Group name" },
+        "description": { "type": "string", "description": "Group description" },
+        "privacy": { "type": "string", "enum": ["public", "private"], "description": "Group privacy" },
+        "coverUrl": { "type": "string", "description": "Cover image URL" },
+        "ownerUid": { "type": "string", "description": "Creator UID" },
+        "members": { "type": "array", "description": "Member UIDs" },
+        "pendingMembers": { "type": "array", "description": "Pending request UIDs" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp" }
+      },
+      "required": ["name", "privacy", "ownerUid", "members", "pendingMembers", "createdAt"]
+    },
+    "TwinPage": {
+      "title": "TwinPage",
+      "description": "Public Page in Twin.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Page name" },
+        "category": { "type": "string", "description": "Page category" },
+        "description": { "type": "string", "description": "Page description" },
+        "coverUrl": { "type": "string", "description": "Cover image URL" },
+        "visibility": { "type": "string", "enum": ["public"], "description": "Page visibility" },
+        "ownerUid": { "type": "string", "description": "Owner UID" },
+        "followers": { "type": "array", "description": "Follower UIDs" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp" }
+      },
+      "required": ["name", "category", "visibility", "ownerUid", "followers", "createdAt"]
+    },
+    "TwinNotification": {
+      "title": "TwinNotification",
+      "description": "User-scoped social notification.",
+      "type": "object",
+      "properties": {
+        "toUid": { "type": "string", "description": "Recipient UID" },
+        "fromUid": { "type": "string", "description": "Sender UID" },
+        "fromName": { "type": "string", "description": "Sender display name" },
+        "fromAvatar": { "type": "string", "description": "Sender avatar URL" },
+        "type": { "type": "string", "enum": ["reaction", "comment", "friend_request", "friend_accept", "message", "group"], "description": "Notification kind" },
+        "message": { "type": "string", "description": "Notification text" },
+        "read": { "type": "boolean", "description": "Read flag" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp" }
+      },
+      "required": ["toUid", "fromUid", "fromName", "type", "message", "read", "createdAt"]
+    },
+    "TwinChatMessage": {
+      "title": "TwinChatMessage",
+      "description": "Realtime 1-to-1 Twin Chat message under /messages/{chatId}/items/{msgId}.",
+      "type": "object",
+      "properties": {
+        "senderUid": { "type": "string", "description": "Sender UID" },
+        "senderName": { "type": "string", "description": "Sender display name" },
+        "memberUids": { "type": "array", "description": "Two participant UIDs matching chatId" },
+        "text": { "type": "string", "description": "Message body" },
+        "imageUrl": { "type": "string", "description": "Optional image URL" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp" }
+      },
+      "required": ["senderUid", "memberUids", "text", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/TwinUser" },
+      "description": "Twin member public profiles"
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/TwinUserPrivate" },
+      "description": "Owner-only private user PII"
+    },
+    "/posts/{postId}": {
+      "schema": { "$ref": "#/entities/TwinPost" },
+      "description": "Twin social feed posts"
+    },
+    "/stories/{storyId}": {
+      "schema": { "$ref": "#/entities/TwinStory" },
+      "description": "Twin 24h stories"
+    },
+    "/groups/{groupId}": {
+      "schema": { "$ref": "#/entities/TwinGroup" },
+      "description": "Twin community groups"
+    },
+    "/pages/{pageId}": {
+      "schema": { "$ref": "#/entities/TwinPage" },
+      "description": "Twin public pages"
+    },
+    "/notifications/{notifId}": {
+      "schema": { "$ref": "#/entities/TwinNotification" },
+      "description": "Twin user notifications"
+    },
+    "/messages/{chatId}/items/{msgId}": {
+      "schema": { "$ref": "#/entities/TwinChatMessage" },
+      "description": "Twin Chat messages"
+    }
+  }
+}

@@ -1,79 +1,59 @@
 package com.example.ui.theme
 
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
-// Obsidian Developer Social — Dark Palette
-val ObsidianCanvas = Color(0xFF0D1117)
-val ObsidianSurface = Color(0xFF161B22)
-val ObsidianSurfaceElevated = Color(0xFF1C232D)
-val ObsidianSurfaceHighest = Color(0xFF232C38)
-val ObsidianBorder = Color(0xFF30363D)
-val ObsidianTextPrimary = Color(0xFFF0F6FC)
-val ObsidianTextSecondary = Color(0xFF8B949E)
+// Twin Design System — Light Mode (from assets/css/twin.css)
+val TwinPrimaryLight = Color(0xFF0095F6)
+val TwinPrimaryHoverLight = Color(0xFF1877F2)
+val TwinPrimarySoftLight = Color(0xFFE0F2FE)
+val TwinBgLight = Color(0xFFF6F7F9)
+val TwinSurfaceLight = Color(0xFFFFFFFF)
+val TwinSurface2Light = Color(0xFFEEF0F4)
+val TwinSurfaceHoverLight = Color(0xFFE3E7EF)
+val TwinBorderLight = Color(0xFFE2E5EC)
+val TwinBorderSubtleLight = Color(0xFFEEF0F4)
+val TwinTextLight = Color(0xFF0F1419)
+val TwinText2Light = Color(0xFF272C33)
+val TwinText3Light = Color(0xFF687385)
+val TwinDangerLight = Color(0xFFED4956)
+val TwinSuccessLight = Color(0xFF1CD14F)
+val TwinWarningLight = Color(0xFFF59E0B)
 
-// Crisp Daylight — Light Palette
-val DaylightCanvas = Color(0xFFF6F8FA)
-val DaylightSurface = Color(0xFFFFFFFF)
-val DaylightSurfaceElevated = Color(0xFFF0F3F6)
-val DaylightSurfaceHighest = Color(0xFFE6EBF1)
-val DaylightBorder = Color(0xFFD0D7DE)
-val DaylightTextPrimary = Color(0xFF1F2328)
-val DaylightTextSecondary = Color(0xFF59636E)
+// Twin Design System — Dark Mode (from assets/css/twin.css)
+val TwinPrimaryDark = Color(0xFF38A5FF)
+val TwinPrimaryHoverDark = Color(0xFF60B8FF)
+val TwinPrimarySoftDark = Color(0xFF132A42)
+val TwinBgDark = Color(0xFF090C12)
+val TwinSurfaceDark = Color(0xFF151A24)
+val TwinSurface2Dark = Color(0xFF232B3D)
+val TwinSurfaceElevatedDark = Color(0xFF1C2333)
+val TwinBorderDark = Color(0xFF2E384D)
+val TwinBorderSubtleDark = Color(0xFF232B3B)
+val TwinTextDark = Color(0xFFF8FAFC)
+val TwinText2Dark = Color(0xFFDCE4F2)
+val TwinText3Dark = Color(0xFF9FB0C9)
+val TwinDangerDark = Color(0xFFFF5C6A)
+val TwinSuccessDark = Color(0xFF34D399)
+val TwinWarningDark = Color(0xFFFBBF24)
 
-// Brand & Semantic Accents
-val PulseEmerald = Color(0xFF3FB950)
-val PulseEmeraldDark = Color(0xFF238636)
-val PulseEmeraldContainerDark = Color(0xFF132D1B)
-val PulseEmeraldContainerLight = Color(0xFFDDF4E4)
+// Twin Signature Accents & Story Gradient Ring
+val TwinHeartRed = Color(0xFFFF3040)
+val TwinStoryGradientColors = listOf(
+    Color(0xFFFEDA75),
+    Color(0xFFFA7E1E),
+    Color(0xFFD62976),
+    Color(0xFF962FBF),
+    Color(0xFF4F5BD5)
+)
 
-val PulseCyan = Color(0xFF58A6FF)
-val PulseCyanDark = Color(0xFF0969DA)
-val PulseCyanContainerDark = Color(0xFF11253D)
-val PulseCyanContainerLight = Color(0xFFDDF4FF)
+fun twinStoryRingBrush(): Brush = Brush.linearGradient(TwinStoryGradientColors)
 
-val PulseViolet = Color(0xFFA371F7)
-val PulseVioletDark = Color(0xFF8250DF)
-val PulseVioletContainerDark = Color(0xFF251A3A)
-val PulseVioletContainerLight = Color(0xFFF3EBFF)
-
-val PulseAmber = Color(0xFFD29922)
-val PulseRose = Color(0xFFF85149)
-val PulseRoseContainerDark = Color(0xFF3B1517)
-val PulseRoseContainerLight = Color(0xFFFFEBE9)
-
-fun languageColor(language: String?): Color = when (language?.lowercase()) {
-    "kotlin" -> Color(0xFFA97BFF)
-    "java" -> Color(0xFFB07219)
-    "typescript" -> Color(0xFF3178C6)
-    "javascript" -> Color(0xFFF1E05A)
-    "python" -> Color(0xFF3572A5)
-    "rust" -> Color(0xFFDEA584)
-    "go" -> Color(0xFF00ADD8)
-    "swift" -> Color(0xFFF05138)
-    "dart" -> Color(0xFF00B4AB)
-    "c++", "cpp" -> Color(0xFFF34B7D)
-    "c#" -> Color(0xFF178600)
-    "c" -> Color(0xFF555555)
-    "vue" -> Color(0xFF41B883)
-    "html" -> Color(0xFFE34C26)
-    "css", "scss" -> Color(0xFF563D7C)
-    "ruby" -> Color(0xFF701516)
-    "php" -> Color(0xFF4F5D95)
-    "shell" -> Color(0xFF89E051)
-    else -> PulseCyan
-}
-
-fun parseGitHubHexColor(hex: String?, fallback: Color = PulseCyan): Color {
-    if (hex.isNullOrBlank()) return fallback
-    val cleaned = hex.trim().removePrefix("#")
-    return try {
-        val value = cleaned.toLong(16)
-        when (cleaned.length) {
-            6 -> Color(0xFF000000L or value)
-            8 -> Color(value)
-            else -> fallback
-        }
-    } catch (_: Exception) {
-        fallback
-    }
+fun storyBackgroundBrush(bgId: String): Brush = when (bgId) {
+    "ig" -> Brush.linearGradient(listOf(Color(0xFFFA7E1E), Color(0xFFD62976), Color(0xFF962FBF)))
+    "ocean" -> Brush.linearGradient(listOf(Color(0xFF0095F6), Color(0xFF2563EB), Color(0xFF4F46E5)))
+    "emerald" -> Brush.linearGradient(listOf(Color(0xFF10B981), Color(0xFF059669), Color(0xFF0F766E)))
+    "sunset" -> Brush.linearGradient(listOf(Color(0xFFF97316), Color(0xFFEF4444), Color(0xFFEC4899)))
+    "midnight" -> Brush.linearGradient(listOf(Color(0xFF0F172A), Color(0xFF1E293B), Color(0xFF334155)))
+    else -> Brush.linearGradient(listOf(Color(0xFF0095F6), Color(0xFF962FBF)))
 }

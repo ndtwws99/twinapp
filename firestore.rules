@@ -1,0 +1,424 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Global Helpers ---
+    function isSignedIn() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        ('email' in request.auth.token
+          && request.auth.token.email == 'ndtwws99@gmail.com'
+          && request.auth.token.get('email_verified', false) == true)
+        || exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function onlyChanges(keys) {
+      return incoming().diff(existing()).affectedKeys().hasOnly(keys);
+    }
+
+    function onlyTouchesSelfIn(field) {
+      let before = existing().get(field, []).toSet();
+      let after = incoming().get(field, []).toSet();
+      return after.difference(before).hasOnly([request.auth.uid])
+          && before.difference(after).hasOnly([request.auth.uid]);
+    }
+
+    function isStringBounded(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    function isOptionalString(data, key, maxLen) {
+      return !(key in data) || (data[key] is string && data[key].size() <= maxLen);
+    }
+
+    function isUidList(val, maxSize) {
+      return val is list && val.size() <= maxSize && (val.size() == 0 || val[0] is string);
+    }
+
+    // --- Validation Blueprints ---
+    function isValidUser(data) {
+      return isStringBounded(data.uid, 1, 128)
+        && isStringBounded(data.name, 1, 80)
+        && data.role in ['member', 'admin']
+        && data.discoverable is bool
+        && isOptionalString(data, 'avatar', 1000)
+        && isOptionalString(data, 'cover', 1000)
+        && isOptionalString(data, 'bio', 400)
+        && isOptionalString(data, 'location', 120)
+        && isOptionalString(data, 'work', 120)
+        && isOptionalString(data, 'website', 300)
+        && (!('online' in data) || data.online is bool)
+        && (!('lastActiveAt' in data) || data.lastActiveAt is int)
+        && isUidList(data.friends, 500)
+        && isUidList(data.friendRequests, 500)
+        && isUidList(data.savedPosts, 500)
+        && data.createdAt is timestamp
+        && data.createdAt <= request.time
+        && (!('updatedAt' in data) || (data.updatedAt is timestamp && data.updatedAt <= request.time));
+    }
+
+    function isValidUserPrivate(data) {
+      return isStringBounded(data.uid, 1, 128)
+        && isOptionalString(data, 'email', 254)
+        && data.updatedAt is timestamp
+        && data.updatedAt <= request.time;
+    }
+
+    function isValidPost(data) {
+      return isStringBounded(data.authorUid, 1, 128)
+        && isStringBounded(data.authorName, 1, 80)
+        && isOptionalString(data, 'authorAvatar', 1000)
+        && isStringBounded(data.content, 0, 5000)
+        && isOptionalString(data, 'feeling', 80)
+        && data.privacy in ['public', 'friends']
+        && isUidList(data.allowedFriendUids, 500)
+        && isOptionalString(data, 'imageUrl', 1500)
+        && isOptionalString(data, 'groupId', 128)
+        && isOptionalString(data, 'groupName', 120)
+        && isOptionalString(data, 'pageId', 128)
+        && isOptionalString(data, 'pageName', 120)
+        && data.pinned is bool
+        && data.reactions is map
+        && data.reactions.size() <= 500
+        && data.comments is list
+        && data.comments.size() <= 200
+        && isUidList(data.savedBy, 500)
+        && data.sharesCount is int
+        && data.sharesCount >= 0
+        && data.sharesCount <= 1000000
+        && data.createdAt is timestamp
+        && data.createdAt <= request.time
+        && (data.content.size() > 0 || (('imageUrl' in data) && data.imageUrl.size() > 0));
+    }
+
+    function isValidStory(data) {
+      return data.type in ['text', 'image']
+        && isStringBounded(data.authorUid, 1, 128)
+        && isStringBounded(data.authorName, 1, 80)
+        && isOptionalString(data, 'authorAvatar', 1000)
+        && isOptionalString(data, 'text', 500)
+        && isOptionalString(data, 'bgId', 40)
+        && isOptionalString(data, 'imageUrl', 1500)
+        && isOptionalString(data, 'caption', 300)
+        && data.privacy in ['public', 'friends']
+        && isUidList(data.likes, 500)
+        && data.sharesCount is int
+        && data.sharesCount >= 0
+        && data.createdAt is timestamp
+        && data.createdAt <= request.time;
+    }
+
+    function isValidGroup(data) {
+      return isStringBounded(data.name, 2, 100)
+        && isOptionalString(data, 'description', 600)
+        && data.privacy in ['public', 'private']
+        && isOptionalString(data, 'coverUrl', 1500)
+        && isStringBounded(data.ownerUid, 1, 128)
+        && isUidList(data.members, 500)
+        && isUidList(data.pendingMembers, 500)
+        && data.createdAt is timestamp
+        && data.createdAt <= request.time;
+    }
+
+    function isValidPage(data) {
+      return isStringBounded(data.name, 2, 100)
+        && isStringBounded(data.category, 1, 80)
+        && isOptionalString(data, 'description', 600)
+        && isOptionalString(data, 'coverUrl', 1500)
+        && data.visibility == 'public'
+        && isStringBounded(data.ownerUid, 1, 128)
+        && isUidList(data.followers, 1000)
+        && data.createdAt is timestamp
+        && data.createdAt <= request.time;
+    }
+
+    function isValidNotification(data) {
+      return isStringBounded(data.toUid, 1, 128)
+        && isStringBounded(data.fromUid, 1, 128)
+        && isStringBounded(data.fromName, 1, 80)
+        && isOptionalString(data, 'fromAvatar', 1000)
+        && data.type in ['reaction', 'comment', 'friend_request', 'friend_accept', 'message', 'group']
+        && isStringBounded(data.message, 1, 300)
+        && data.read is bool
+        && data.createdAt is timestamp
+        && data.createdAt <= request.time;
+    }
+
+    function isValidChatMessage(data) {
+      return isStringBounded(data.senderUid, 1, 128)
+        && isOptionalString(data, 'senderName', 80)
+        && data.memberUids is list
+        && data.memberUids.size() == 2
+        && data.memberUids[0] is string
+        && data.memberUids[1] is string
+        && isStringBounded(data.text, 0, 2000)
+        && isOptionalString(data, 'imageUrl', 1500)
+        && data.createdAt is timestamp
+        && data.createdAt <= request.time
+        && (data.text.size() > 0 || (('imageUrl' in data) && data.imageUrl.size() > 0));
+    }
+
+    // --- Collection Rules ---
+
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId)
+        && (request.auth.uid == userId || existing().discoverable == true || isAdmin());
+      allow list: if isSignedIn() && existing().discoverable == true;
+
+      allow create: if isSignedIn()
+        && isValidId(userId)
+        && request.auth.uid == userId
+        && incoming().uid == userId
+        && incoming().keys().hasAll(['uid', 'name', 'role', 'discoverable', 'friends', 'friendRequests', 'savedPosts', 'createdAt'])
+        && incoming().keys().hasOnly(['uid', 'name', 'role', 'avatar', 'cover', 'bio', 'location', 'work', 'website', 'discoverable', 'online', 'friends', 'friendRequests', 'savedPosts', 'lastActiveAt', 'createdAt', 'updatedAt'])
+        && (isAdmin() || incoming().role == 'member')
+        && isValidUser(incoming());
+
+      allow update: if isSignedIn()
+        && isValidId(userId)
+        && isValidUser(incoming())
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && (
+          isAdmin()
+          || (
+            request.auth.uid == userId
+            && incoming().role == existing().role
+            && onlyChanges(['name', 'avatar', 'cover', 'bio', 'location', 'work', 'website', 'discoverable', 'online', 'friends', 'friendRequests', 'savedPosts', 'lastActiveAt', 'updatedAt'])
+          )
+          || (
+            onlyChanges(['friends', 'friendRequests'])
+            && onlyTouchesSelfIn('friends')
+            && onlyTouchesSelfIn('friendRequests')
+          )
+        );
+
+      allow delete: if isSignedIn() && isValidId(userId) && isAdmin();
+
+      match /private/{docId} {
+        allow get, list: if isSignedIn() && request.auth.uid == userId;
+        allow create: if isSignedIn()
+          && isValidId(userId)
+          && isValidId(docId)
+          && request.auth.uid == userId
+          && incoming().uid == userId
+          && incoming().keys().hasAll(['uid', 'updatedAt'])
+          && incoming().keys().hasOnly(['uid', 'email', 'updatedAt'])
+          && isValidUserPrivate(incoming());
+        allow update: if isSignedIn()
+          && isValidId(userId)
+          && isValidId(docId)
+          && request.auth.uid == userId
+          && incoming().uid == existing().uid
+          && onlyChanges(['email', 'updatedAt'])
+          && isValidUserPrivate(incoming());
+        allow delete: if isSignedIn() && isValidId(userId) && isValidId(docId) && request.auth.uid == userId;
+      }
+    }
+
+    match /posts/{postId} {
+      allow get: if isSignedIn() && isValidId(postId)
+        && (existing().privacy == 'public'
+            || existing().authorUid == request.auth.uid
+            || request.auth.uid in existing().allowedFriendUids
+            || isAdmin());
+      allow list: if isSignedIn()
+        && (existing().privacy == 'public'
+            || existing().authorUid == request.auth.uid
+            || request.auth.uid in existing().allowedFriendUids);
+
+      allow create: if isSignedIn()
+        && isValidId(postId)
+        && incoming().authorUid == request.auth.uid
+        && incoming().keys().hasAll(['authorUid', 'authorName', 'content', 'privacy', 'allowedFriendUids', 'pinned', 'reactions', 'comments', 'savedBy', 'sharesCount', 'createdAt'])
+        && incoming().keys().hasOnly(['authorUid', 'authorName', 'authorAvatar', 'content', 'feeling', 'privacy', 'allowedFriendUids', 'imageUrl', 'groupId', 'groupName', 'pageId', 'pageName', 'pinned', 'reactions', 'comments', 'savedBy', 'sharesCount', 'createdAt'])
+        && isValidPost(incoming());
+
+      allow update: if isSignedIn()
+        && isValidId(postId)
+        && isValidPost(incoming())
+        && incoming().authorUid == existing().authorUid
+        && incoming().createdAt == existing().createdAt
+        && (
+          isAdmin()
+          || (existing().authorUid == request.auth.uid && onlyChanges(['content', 'feeling', 'privacy', 'allowedFriendUids', 'imageUrl', 'pinned', 'reactions', 'comments', 'savedBy', 'sharesCount']))
+          || (onlyChanges(['reactions']))
+          || (onlyChanges(['comments']))
+          || (onlyChanges(['savedBy']) && onlyTouchesSelfIn('savedBy'))
+          || (onlyChanges(['sharesCount']) && incoming().sharesCount >= existing().sharesCount)
+        );
+
+      allow delete: if isSignedIn() && isValidId(postId)
+        && (existing().authorUid == request.auth.uid || isAdmin());
+    }
+
+    match /stories/{storyId} {
+      allow get: if isSignedIn() && isValidId(storyId)
+        && (existing().privacy == 'public' || existing().authorUid == request.auth.uid || isAdmin());
+      allow list: if isSignedIn()
+        && (existing().privacy == 'public' || existing().authorUid == request.auth.uid);
+
+      allow create: if isSignedIn()
+        && isValidId(storyId)
+        && incoming().authorUid == request.auth.uid
+        && incoming().keys().hasAll(['type', 'authorUid', 'authorName', 'privacy', 'likes', 'sharesCount', 'createdAt'])
+        && incoming().keys().hasOnly(['type', 'authorUid', 'authorName', 'authorAvatar', 'text', 'bgId', 'imageUrl', 'caption', 'privacy', 'likes', 'sharesCount', 'createdAt'])
+        && isValidStory(incoming());
+
+      allow update: if isSignedIn()
+        && isValidId(storyId)
+        && isValidStory(incoming())
+        && incoming().authorUid == existing().authorUid
+        && incoming().createdAt == existing().createdAt
+        && (
+          isAdmin()
+          || (existing().authorUid == request.auth.uid && onlyChanges(['text', 'caption', 'privacy']))
+          || (onlyChanges(['likes']) && onlyTouchesSelfIn('likes'))
+          || (onlyChanges(['sharesCount']) && incoming().sharesCount >= existing().sharesCount)
+        );
+
+      allow delete: if isSignedIn() && isValidId(storyId)
+        && (existing().authorUid == request.auth.uid || isAdmin());
+    }
+
+    match /groups/{groupId} {
+      allow get: if isSignedIn() && isValidId(groupId)
+        && (existing().privacy == 'public'
+            || existing().ownerUid == request.auth.uid
+            || request.auth.uid in existing().members
+            || isAdmin());
+      allow list: if isSignedIn()
+        && (existing().privacy == 'public'
+            || existing().ownerUid == request.auth.uid
+            || request.auth.uid in existing().members);
+
+      allow create: if isSignedIn()
+        && isValidId(groupId)
+        && incoming().ownerUid == request.auth.uid
+        && incoming().keys().hasAll(['name', 'privacy', 'ownerUid', 'members', 'pendingMembers', 'createdAt'])
+        && incoming().keys().hasOnly(['name', 'description', 'privacy', 'coverUrl', 'ownerUid', 'members', 'pendingMembers', 'createdAt'])
+        && isValidGroup(incoming());
+
+      allow update: if isSignedIn()
+        && isValidId(groupId)
+        && isValidGroup(incoming())
+        && incoming().ownerUid == existing().ownerUid
+        && incoming().createdAt == existing().createdAt
+        && (
+          isAdmin()
+          || (existing().ownerUid == request.auth.uid && onlyChanges(['name', 'description', 'privacy', 'coverUrl', 'members', 'pendingMembers']))
+          || (onlyChanges(['pendingMembers']) && onlyTouchesSelfIn('pendingMembers'))
+          || (onlyChanges(['members']) && onlyTouchesSelfIn('members')
+              && (existing().privacy == 'public'
+                  || incoming().members.toSet().difference(existing().members.toSet()).size() == 0))
+        );
+
+      allow delete: if isSignedIn() && isValidId(groupId)
+        && (existing().ownerUid == request.auth.uid || isAdmin());
+    }
+
+    match /pages/{pageId} {
+      allow get: if isSignedIn() && isValidId(pageId)
+        && (existing().visibility == 'public' || existing().ownerUid == request.auth.uid || isAdmin());
+      allow list: if isSignedIn()
+        && (existing().visibility == 'public' || existing().ownerUid == request.auth.uid);
+
+      allow create: if isSignedIn()
+        && isValidId(pageId)
+        && incoming().ownerUid == request.auth.uid
+        && incoming().keys().hasAll(['name', 'category', 'visibility', 'ownerUid', 'followers', 'createdAt'])
+        && incoming().keys().hasOnly(['name', 'category', 'description', 'coverUrl', 'visibility', 'ownerUid', 'followers', 'createdAt'])
+        && isValidPage(incoming());
+
+      allow update: if isSignedIn()
+        && isValidId(pageId)
+        && isValidPage(incoming())
+        && incoming().ownerUid == existing().ownerUid
+        && incoming().createdAt == existing().createdAt
+        && (
+          isAdmin()
+          || (existing().ownerUid == request.auth.uid && onlyChanges(['name', 'category', 'description', 'coverUrl']))
+          || (onlyChanges(['followers']) && onlyTouchesSelfIn('followers'))
+        );
+
+      allow delete: if isSignedIn() && isValidId(pageId)
+        && (existing().ownerUid == request.auth.uid || isAdmin());
+    }
+
+    match /notifications/{notifId} {
+      allow get: if isSignedIn() && isValidId(notifId)
+        && (existing().toUid == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && existing().toUid == request.auth.uid;
+
+      allow create: if isSignedIn()
+        && isValidId(notifId)
+        && incoming().fromUid == request.auth.uid
+        && incoming().keys().hasAll(['toUid', 'fromUid', 'fromName', 'type', 'message', 'read', 'createdAt'])
+        && incoming().keys().hasOnly(['toUid', 'fromUid', 'fromName', 'fromAvatar', 'type', 'message', 'read', 'createdAt'])
+        && isValidNotification(incoming());
+
+      allow update: if isSignedIn()
+        && isValidId(notifId)
+        && isValidNotification(incoming())
+        && incoming().toUid == existing().toUid
+        && incoming().fromUid == existing().fromUid
+        && incoming().createdAt == existing().createdAt
+        && (isAdmin() || (existing().toUid == request.auth.uid && onlyChanges(['read'])));
+
+      allow delete: if isSignedIn() && isValidId(notifId)
+        && (existing().toUid == request.auth.uid || isAdmin());
+    }
+
+    match /messages/{chatId}/items/{msgId} {
+      allow get: if isSignedIn()
+        && isValidId(chatId)
+        && isValidId(msgId)
+        && request.auth.uid in existing().memberUids
+        && (chatId == existing().memberUids[0] + '_' + existing().memberUids[1]
+            || chatId == existing().memberUids[1] + '_' + existing().memberUids[0]);
+
+      allow list: if isSignedIn()
+        && request.auth.uid in existing().memberUids;
+
+      allow create: if isSignedIn()
+        && isValidId(chatId)
+        && isValidId(msgId)
+        && incoming().senderUid == request.auth.uid
+        && request.auth.uid in incoming().memberUids
+        && (chatId == incoming().memberUids[0] + '_' + incoming().memberUids[1]
+            || chatId == incoming().memberUids[1] + '_' + incoming().memberUids[0])
+        && incoming().keys().hasAll(['senderUid', 'memberUids', 'text', 'createdAt'])
+        && incoming().keys().hasOnly(['senderUid', 'senderName', 'memberUids', 'text', 'imageUrl', 'createdAt'])
+        && isValidChatMessage(incoming());
+
+      allow delete: if isSignedIn()
+        && isValidId(chatId)
+        && isValidId(msgId)
+        && request.auth.uid in existing().memberUids
+        && (existing().senderUid == request.auth.uid || isAdmin());
+    }
+  }
+}

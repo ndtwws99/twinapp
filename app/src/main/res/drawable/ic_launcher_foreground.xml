@@ -3,6 +3,6 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:drawable="@drawable/ic_gitpulse_icon"
+        android:drawable="@drawable/ic_twin_icon"
         android:gravity="center" />
 </layer-list>
