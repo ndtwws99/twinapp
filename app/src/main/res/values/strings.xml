@@ -1,0 +1,78 @@
+<resources>
+    <string name="app_name">GitPulse</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_feed">Bảng tin</string>
+    <string name="nav_explore">Khám phá</string>
+    <string name="nav_saved">Đã lưu</string>
+    <string name="nav_profile">Hồ sơ</string>
+
+    <!-- Feed -->
+    <string name="feed_subtitle">Mạng xã hội từ GitHub API</string>
+    <string name="feed_stories_title">Cộng đồng nổi bật</string>
+    <string name="feed_tab_trending">Xu hướng</string>
+    <string name="feed_tab_live">Hoạt động mới</string>
+    <string name="feed_tab_following">Đang theo dõi</string>
+    <string name="feed_refresh">Làm mới</string>
+    <string name="feed_empty_following">Chưa có hoạt động từ các lập trình viên bạn đang theo dõi.</string>
+    <string name="feed_empty_generic">Không có dữ liệu hiển thị. Kéo hoặc nhấn làm mới để thử lại.</string>
+
+    <!-- Explore -->
+    <string name="explore_title">Khám phá GitHub</string>
+    <string name="explore_search_hint">Tìm kho mã nguồn, chủ đề hoặc lập trình viên...</string>
+    <string name="explore_mode_repos">Kho mã nguồn</string>
+    <string name="explore_mode_users">Lập trình viên</string>
+    <string name="explore_topics_label">Chủ đề mạng xã hội &amp; mã nguồn mở</string>
+    <string name="explore_no_results">Không tìm thấy kết quả phù hợp trên GitHub.</string>
+
+    <!-- Saved -->
+    <string name="saved_title">Kho mã nguồn đã lưu</string>
+    <string name="saved_subtitle">Danh sách dự án bạn đã đánh dấu để đọc lại nhanh</string>
+    <string name="saved_empty_title">Chưa có dự án nào được lưu</string>
+    <string name="saved_empty_desc">Nhấn biểu tượng lưu trên bất kỳ bài đăng hoặc kho mã nguồn nào để thêm vào bộ sưu tập của bạn.</string>
+
+    <!-- Profile & Settings -->
+    <string name="profile_title">Hồ sơ &amp; Kết nối GitHub</string>
+    <string name="profile_connect_title">Kết nối tài khoản GitHub của bạn</string>
+    <string name="profile_username_hint">Nhập tên người dùng GitHub (vd: torvalds)</string>
+    <string name="profile_token_hint">GitHub Personal Access Token (tùy chọn)</string>
+    <string name="profile_token_helper">Token giúp nâng giới hạn GitHub API từ 60 lên 5.000 lượt/giờ và lưu an toàn trên thiết bị.</string>
+    <string name="profile_apply_button">Cập nhật nguồn</string>
+    <string name="profile_theme_title">Giao diện tối (Obsidian)</string>
+    <string name="profile_following_section">Đang theo dõi (%1$d)</string>
+    <string name="profile_rate_limit">Giới hạn GitHub API còn lại: %1$d / %2$d</string>
+
+    <!-- Repo Detail -->
+    <string name="repo_tab_readme">README</string>
+    <string name="repo_tab_releases">Releases</string>
+    <string name="repo_tab_issues">Thảo luận</string>
+    <string name="repo_tab_files">Tệp &amp; JSON</string>
+    <string name="repo_open_github">Mở trên GitHub</string>
+    <string name="repo_share">Chia sẻ</string>
+    <string name="repo_bookmark">Lưu dự án</string>
+    <string name="repo_bookmarked">Đã lưu</string>
+    <string name="repo_no_readme">Kho mã nguồn này chưa có tệp README.md.</string>
+    <string name="repo_no_releases">Chưa có bản phát hành (Release) nào được công bố.</string>
+    <string name="repo_no_issues">Chưa có bài thảo luận hoặc Issue công khai nào.</string>
+    <string name="repo_no_files">Thư mục trống.</string>
+    <string name="repo_download_asset">Tải xuống</string>
+    <string name="repo_view_comments">Xem %1$d bình luận</string>
+    <string name="repo_hide_comments">Ẩn bình luận</string>
+    <string name="repo_no_comments">Chưa có bình luận nào trong thảo luận này.</string>
+
+    <!-- User Profile -->
+    <string name="user_follow">Theo dõi</string>
+    <string name="user_following">Đang theo dõi</string>
+    <string name="user_repos_tab">Kho mã nguồn</string>
+    <string name="user_activity_tab">Bài đăng &amp; Hoạt động</string>
+    <string name="user_followers_label">Người theo dõi</string>
+    <string name="user_following_label">Đang theo dõi</string>
+    <string name="user_repos_label">Dự án</string>
+
+    <!-- Actions & States -->
+    <string name="action_retry">Thử lại</string>
+    <string name="action_back">Quay lại</string>
+    <string name="action_close">Đóng</string>
+    <string name="error_rate_limit">Đã đạt giới hạn truy cập GitHub API (60 lượt/giờ). Hãy thêm GitHub Token ở mục Hồ sơ để tiếp tục không giới hạn.</string>
+    <string name="error_network">Không thể kết nối tới GitHub API. Kiểm tra mạng và thử lại.</string>
+</resources>

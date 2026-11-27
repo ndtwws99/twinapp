@@ -1,0 +1,6 @@
+{
+  "name": "GitPulse",
+  "description": "Mạng xã hội lập trình viên kết nối trực tiếp GitHub API — theo dõi bảng tin hoạt động, khám phá kho mã nguồn, đọc Markdown README, Releases, thảo luận Issues và duyệt tệp JSON.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
